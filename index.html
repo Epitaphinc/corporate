@@ -324,17 +324,17 @@
             const srvList = document.getElementById('service-list');
             const maxExpertise = 8; 
 
-            for (let i = 0; i < maxExpertise; i++) {
+           for (let i = 0; i < maxExpertise; i++) {
                 if (!config.expertiseData[i]) break;
 
                 const data = config.expertiseData[i];
                 const fileNum = i + 1;
                 const imgSrc = `image/project${fileNum}.jpg`; 
 
-                // div要素を作成（この時点ではまだ追加しない）
+                // div要素を作成
                 const div = document.createElement('div');
-                div.className = 'srv-item'; // 初期状態では hover-target をつけない
-                div.style.display = 'none'; 
+                div.className = 'srv-item'; 
+                div.style.display = 'none'; // 初期状態は非表示
                 
                 div.innerHTML = `
                     <div style="display:flex; align-items:center;">
@@ -344,37 +344,29 @@
                     <span class="srv-arrow">VIEW DETAIL →</span>
                 `;
 
+                // ★【重要】読み込みを待たずに、先にリストに追加して「場所」を確保する
+                srvList.appendChild(div);
+
                 const imgCheck = new Image();
                 
-                // ★ 画像が見つかった場合（通常表示）
+                // ★ 画像が見つかった場合
                 imgCheck.onload = function() {
-                    div.style.display = 'flex';
+                    div.style.display = 'flex'; // 表示オン
                     div.classList.add('visible');
-                    div.classList.add('hover-target'); // カーソル反応ON
+                    div.classList.add('hover-target');
                     
-                    // クリックイベント追加
                     div.addEventListener('click', () => {
                         openLightbox(imgSrc, data.title, data.desc);
                     });
-                    
-                    // リストに追加
-                    srvList.appendChild(div);
                 };
 
-                // ★ 画像が見つからなかった場合（リストのみ表示・クリック無効）
+                // ★ 画像が見つからなかった場合
                 imgCheck.onerror = function() {
-                    div.style.display = 'flex';
+                    div.style.display = 'flex'; // 表示オン
                     div.classList.add('visible');
-                    // hover-target は追加しない（カーソル反応OFF）
                     
-                    // 矢印を非表示にする（クリックできないことを視覚的に伝える）
                     const arrow = div.querySelector('.srv-arrow');
                     if(arrow) arrow.style.display = 'none';
-
-                    // クリックイベントは追加しない
-                    
-                    // リストに追加
-                    srvList.appendChild(div);
                 };
                 
                 imgCheck.src = imgSrc;
