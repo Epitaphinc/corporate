@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<!--
+  Template: AVANTGARDE v1.0
+  Author: Haruki Tominaga
+  License: https://amix-design.com/tominaga/eyan-theme/license 
+  © 2025 EYAN / トミナガハルキ
+-->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="robots" content="index, follow">
+    
+    <title>Epitaph.inc-Vision Meets Reality</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Noto+Sans+JP:wght@300;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* * ==========================================
+         * ★ 配色設定 (Color Palette)
+         * ここを変えるだけでサイト全体の雰囲気を変更できます
+         * ==========================================
+         */
+        :root {
+            --bg: #050505;   /* 背景色（ほぼ黒） */
+            --text: #e0e0e0; /* 基本文字色（薄いグレー） */
+            --accent: #555;  /* アクセントカラー（濃いグレー） */
+        }
+        
+        /* カーソル非表示（カスタムカーソルを使用するため） */
+        * { cursor: none !important; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Noto Sans JP', sans-serif;
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* リンク設定 */
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: #fff; /* ホバー時は白く発光 */
+        }
+
+        /* ノイズエフェクト（画面全体のザラザラ感） */
+        .noise {
+            position: fixed; inset: 0; z-index: 999;
+            pointer-events: none; opacity: 0.05;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC42IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjUiLz48L3N2Zz4=');
+        }
+
+        /* カスタムカーソル（白い追従する円） */
+        .cursor-dot, .cursor-circle {
+            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10000;
+            border-radius: 50%; transform: translate(-50%, -50%);
+            mix-blend-mode: exclusion; /* 背景色と反転する演出 */
+        }
+        .cursor-dot { width: 8px; height: 8px; background: white; }
+        .cursor-circle {
+            width: 40px; height: 40px; border: 1px solid white;
+            transition: width 0.3s, height 0.3s, background 0.3s;
+        }
+        body.hovering .cursor-circle { width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-color: transparent; }
+
+        /* コンテナ */
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 4vw; }
+
+        /* ヘッダーエリア */
+        .hero {
+            height: 100vh; display: flex; flex-direction: column; justify-content: center;
+            position: relative;
+        }
+        .hero-big {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10vw; text-transform: uppercase; line-height: 0.9;
+            color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.5); /* 文字の縁取り */
+            margin: 0; transition: 0.5s;
+        }
+        .hero:hover .hero-big { color: #fff; }
+
+        .hero-desc {
+            margin-top: 2rem; max-width: 400px; font-size: 0.9rem; line-height: 1.8; color: #888;
+            margin-left: auto;
+        }
+
+        /* セクション共通設定 */
+        .sec { padding: 10rem 0; }
+        .sec-title {
+            font-family: 'Montserrat', sans-serif; font-size: 3rem; margin-bottom: 4rem;
+            border-bottom: 1px solid #333; padding-bottom: 1rem; display: inline-block;
+        }
+
+        /* Expertise (サービスリスト) */
+        .service-list { border-top: 1px solid #333; }
+        .srv-item {
+            border-bottom: 1px solid #333; padding: 3rem 0;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: 0.4s; position: relative; overflow: hidden;
+            display: none; /* ★画像がない項目は自動で非表示になります */
+        }
+        .srv-item.visible { display: flex; animation: fadeIn 0.5s forwards; }
+
+        .srv-item:hover { padding-left: 2rem; background: #111; }
+        .srv-num { font-family: 'Montserrat'; color: #555; margin-right: 2rem; }
+        .srv-name { font-size: 2.5rem; font-weight: 300; }
+        .srv-arrow { font-size: 2rem; opacity: 0; transition: 0.4s; transform: translateX(-20px); }
+        .srv-item:hover .srv-arrow { opacity: 1; transform: translateX(0); }
+
+        /* Selected Works (画像ギャラリー) */
+        .gallery {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10vw; margin-top: 5rem;
+        }
+        .gal-item { margin-bottom: 10rem; display: none; }
+        .gal-item.loaded { display: block; animation: fadeIn 1s ease forwards; }
+        
+        .gal-item:nth-child(even) { margin-top: 15rem; } /* 偶数番目の画像をずらして配置 */
+
+        .img-mask {
+            width: 100%; overflow: hidden; position: relative; cursor: pointer;
+        }
+        .g-img {
+            width: 100%; height: auto; display: block; filter: grayscale(100%);
+            transition: 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: scale(1.1);
+        }
+        .img-mask:hover .g-img { filter: grayscale(0%); transform: scale(1); }
+        
+        .g-title { font-family: 'Montserrat'; font-size: 1.2rem; margin-top: 1rem; display: block; }
+        .g-sub { color: #666; font-size: 0.8rem; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Company (会社概要) */
+        .company-area {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+            border-top: 1px solid #333; 
+            padding-top: 2rem;
+        }
+        .co-dl { display: grid; grid-template-columns: 150px 1fr; row-gap: 2rem; margin: 0; }
+        .co-dt { font-family: 'Montserrat'; font-weight: 700; color: #555; }
+        .co-dd { margin: 0; font-weight: 300; line-height: 1.8; }
+
+        /* フッター */
+        footer {
+            padding: 5rem 0; text-align: center; border-top: 1px solid #333; margin-top: 5rem;
+        }
+        .f-contact {
+            font-size: 5vw; font-weight: 700; text-decoration: none; color: #fff;
+            display: inline-block; transition: 0.3s;
+        }
+        .f-contact:hover { letter-spacing: 0.1em; color: #888; }
+
+        /* Lightbox (画像拡大モーダル) */
+        .lightbox {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: 0.4s;
+            padding: 4vw;
+        }
+        .lightbox.active { opacity: 1; pointer-events: auto; }
+
+        .lb-content {
+            display: flex; width: 100%; max-width: 1200px; gap: 4rem;
+            align-items: center; justify-content: center;
+            transform: scale(0.95); transition: 0.4s;
+        }
+        .lightbox.active .lb-content { transform: scale(1); }
+
+        .lb-img-wrap { flex: 3; max-height: 80vh; display: flex; align-items: center; justify-content: center; }
+        .lb-img {
+            max-width: 100%; max-height: 80vh; box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            display: block; width: auto; height: auto;
+        }
+
+        /* モーダル内のテキストエリア */
+        .lb-info { 
+            flex: 2; display: none; flex-direction: column; justify-content: center; 
+            text-align: left; opacity: 0; transform: translateX(20px); transition: 0.5s 0.2s;
+        }
+        .lightbox.active .lb-info { opacity: 1; transform: translateX(0); }
+        
+        .lightbox.has-text .lb-info { display: flex; }
+        .lightbox.has-text .lb-content { max-width: 1200px; }
+
+        .lightbox:not(.has-text) .lb-img-wrap { flex: auto; width: 100%; justify-content: center; }
+        .lightbox:not(.has-text) .lb-content { max-width: auto; justify-content: center; }
+
+        .lb-title { font-family: 'Montserrat'; font-size: 2.5rem; margin-bottom: 1.5rem; color: #fff; line-height: 1.1; }
+        .lb-desc { font-size: 0.95rem; line-height: 1.8; color: #aaa; border-left: 1px solid #333; padding-left: 1.5rem; }
+
+        .lb-close {
+            position: absolute; top: 30px; right: 30px; font-size: 1.5rem; color: #fff;
+            font-family: 'Montserrat'; cursor: pointer; z-index: 10;
+        }
+
+        /* スマートフォン向けレスポンシブ設定 */
+        @media (max-width: 768px) {
+            .hero-big { font-size: 15vw; }
+            .gallery { grid-template-columns: 1fr; gap: 2rem; }
+            .gal-item:nth-child(even) { margin-top: 0; }
+            
+            .company-area { grid-template-columns: 1fr; gap: 3rem; }
+            .co-dl { display: block; }
+            .co-dt { margin-bottom: 0.5rem; margin-top: 1.5rem; font-size: 0.9rem; }
+            .co-dd { margin-left: 0; margin-bottom: 1rem; }
+
+            .lb-content { flex-direction: column; gap: 2rem; overflow-y: auto; max-height: 90vh; }
+            .lb-img-wrap { width: 100%; flex: none; }
+            .lb-img { max-height: 50vh; width: 100%; object-fit: contain; }
+            .lb-info { width: 100%; padding-bottom: 2rem; }
+            .lb-title { font-size: 1.8rem; }
+
+            /* スマホではカスタムカーソルを無効化 */
+            .cursor-dot, .cursor-circle { display: none; }
+            * { cursor: auto !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+
+    <div id="lightbox" class="lightbox">
+        <div class="lb-close hover-target">CLOSE</div>
+        <div class="lb-content">
+            <div class="lb-img-wrap">
+                <img id="lb-img" class="lb-img" src="" alt="">
+            </div>
+            <div class="lb-info">
+                <h3 id="lb-title" class="lb-title"></h3>
+                <p id="lb-desc" class="lb-desc"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="hero">
+            <h1 id="hero-title" class="hero-big hover-target"></h1>
+            <p id="hero-desc" class="hero-desc"></p>
+        </header>
+
+        <section class="sec">
+            <h2 class="sec-title">Expertise</h2>
+            <div id="service-list" class="service-list"></div>
+        </section>
+
+        <section class="sec" style="padding-top: 0;">
+            <h2 class="sec-title">Company</h2>
+            <div class="company-area">
+                <div>
+                    <p style="margin-top:0; font-size:1.1rem; line-height:2; margin-bottom: 2rem;">
+                        経営のロジックと現場のリアリティを融合させ<br>
+                        常に「現実解」を創造するビジネススタジオ。<br>
+                        課題解決を通じ、事業と組織に深く刻まれる<br>
+                        本質的な姿や潜在能力を引き出します。
+                    </p>
+                </div>
+                <dl class="co-dl">
+                    <dt class="co-dt">NAME</dt>
+                    <dd class="co-dd">株式会社Epitaph</dd>
+                    
+                    <dt class="co-dt">ADDRESS</dt>
+                    <dd class="co-dd">〒562-0001 大阪府箕面市箕面3-11-25</dd>
+                    
+                    <dt class="co-dt">FOUNDED</dt>
+                    <dd class="co-dd">2019.04.19</dd>
+                    
+                    <dt class="co-dt">CEO</dt>
+                    <dd class="co-dd">岩﨑 陽治郎</dd>
+                </dl>
+            </div>
+        </section>
+
+        <footer>
+            <a href="#" id="contact-link" class="f-contact hover-target">GET IN TOUCH</a>
+            <div style="margin-top: 3rem; color: #555;">
+                &copy; <span id="year"></span> <span id="footer-name"></span>
+            </div>
+        </footer>
+    </div>
+
+<script>
+        /**
+         * ========================================================
+         * ★ 設定エリア (Configuration)
+         * ========================================================
+         */
+        const config = {
+            name: "Epitaph.Inc.",
+            title: "Vision<br>Meets<br>Reality",
+            desc: "理想と現実をつなぐ「解」を刻む。<br>私たちは戦略を現場の日常へ落とし込む<br>中小企業向けのビジネススタジオです。",
+            email: "mailto:info@epitaphinc.com",
+            
+            expertiseData: [
+                // 引用符のエラー修正済み
+                { title: "戦略策定", desc: "理想論だけの絵図は描きません。金融と実業のバックグラウンドを活かし、財務的裏付けと現場の実行可能性（フィジビリティ）を兼ね備えた、'勝てる'ロードマップを策定します。" },
+                { title: "組織開発", desc: "戦略を動かすのは、いつだって「人」と「規律」です。KPI設計から評価制度の構築、風土改革まで、組織が自律的に目標へ向かうためのエンジンを設計します。" },
+                { title: "プロジェクトマネジメント", desc: "プロジェクトの停滞要因は、常に現場の摩擦にあります。複雑な利害関係を調整し、As-is（現状）からTo-be（理想）への移行プロセスを、泥臭く、かつ確実に完遂させます。" },
+                { title: "新規事業開発", desc: "「スモールビジネス・スタジオ」として、0→1の立ち上げからPMF（市場適合）の検証までを伴走。机上の空論ではない、現場検証に基づいた事業創出を支援します。" },
+                { title: "データ分析", desc: "感覚と経験だけの経営からの脱却を。埋もれている現場データを掘り起こして可視化し、経営判断の精度を高めるための「武器（ファクト）」として再定義します。" },
+                { title: "知的財産マネジメント", desc: "生み出したアイデアや技術を、企業の永続的な資産へ。攻め（競争優位性の確保）と守り（リスク回避）の両面から知財戦略を構築し、事業価値を最大化します。" },
+                { title: "デジタルソリューション", desc: "「データ化.com」に代表されるように、過剰な機能よりも「現場が使いこなせる現実解」を重視。業務フローに滑らかに溶け込む、実利あるDXを実装します。" },
+                { title: "ソーシャルインパクト", desc: "企業の利益にとどまらず、業界全体の構造課題や社会課題へアプローチする。事業活動を通じて社会にポジティブな楔（くさび）を刻む、CSV経営を実現します。" }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 基本情報反映
+            document.getElementById('hero-title').innerHTML = config.title;
+            document.getElementById('hero-desc').innerHTML = config.desc;
+            document.getElementById('contact-link').href = config.email;
+            document.getElementById('footer-name').textContent = config.name;
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            // --- Expertiseリストの自動生成ロジック ---
+            const srvList = document.getElementById('service-list');
+            const maxExpertise = 8; 
+
+            for (let i = 0; i < maxExpertise; i++) {
+                if (!config.expertiseData[i]) break;
+
+                const data = config.expertiseData[i];
+                const fileNum = i + 1;
+                const imgSrc = `image/project${fileNum}.jpg`; 
+
+                // div要素を作成（この時点ではまだ追加しない）
+                const div = document.createElement('div');
+                div.className = 'srv-item'; // 初期状態では hover-target をつけない
+                div.style.display = 'none'; 
+                
+                div.innerHTML = `
+                    <div style="display:flex; align-items:center;">
+                        <span class="srv-num">/${String(fileNum).padStart(2, '0')}</span>
+                        <span class="srv-name">${data.title}</span>
+                    </div>
+                    <span class="srv-arrow">VIEW DETAIL →</span>
+                `;
+
+                const imgCheck = new Image();
+                
+                // ★ 画像が見つかった場合（通常表示）
+                imgCheck.onload = function() {
+                    div.style.display = 'flex';
+                    div.classList.add('visible');
+                    div.classList.add('hover-target'); // カーソル反応ON
+                    
+                    // クリックイベント追加
+                    div.addEventListener('click', () => {
+                        openLightbox(imgSrc, data.title, data.desc);
+                    });
+                    
+                    // リストに追加
+                    srvList.appendChild(div);
+                };
+
+                // ★ 画像が見つからなかった場合（リストのみ表示・クリック無効）
+                imgCheck.onerror = function() {
+                    div.style.display = 'flex';
+                    div.classList.add('visible');
+                    // hover-target は追加しない（カーソル反応OFF）
+                    
+                    // 矢印を非表示にする（クリックできないことを視覚的に伝える）
+                    const arrow = div.querySelector('.srv-arrow');
+                    if(arrow) arrow.style.display = 'none';
+
+                    // クリックイベントは追加しない
+                    
+                    // リストに追加
+                    srvList.appendChild(div);
+                };
+                
+                imgCheck.src = imgSrc;
+            }
+
+
+            // --- ライトボックス制御 ---
+            const lb = document.getElementById('lightbox');
+            const lbImg = document.getElementById('lb-img');
+            const lbTitle = document.getElementById('lb-title');
+            const lbDesc = document.getElementById('lb-desc');
+            
+            window.openLightbox = (src, title = null, desc = null) => {
+                lbImg.src = src;
+                if (title && desc) {
+                    lb.classList.add('has-text');
+                    lbTitle.textContent = title;
+                    lbDesc.textContent = desc;
+                } else {
+                    lb.classList.remove('has-text');
+                    lbTitle.textContent = "";
+                    lbDesc.textContent = "";
+                }
+                lb.classList.add('active');
+            };
+
+            lb.addEventListener('click', (e) => {
+                lb.classList.remove('active');
+                setTimeout(() => { 
+                    lbImg.src = ''; 
+                    lb.classList.remove('has-text');
+                }, 400);
+            });
+            
+            document.querySelector('.lb-close').addEventListener('click', () => {
+                lb.classList.remove('active');
+            });
+
+            // --- カーソル制御 ---
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorCircle = document.querySelector('.cursor-circle');
+            let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                cursorDot.style.left = mouseX + 'px';
+                cursorDot.style.top = mouseY + 'px';
+            });
+
+            function animateCursor() {
+                const dx = mouseX - cursorX;
+                const dy = mouseY - cursorY;
+                cursorX += dx * 0.15;
+                cursorY += dy * 0.15;
+                cursorCircle.style.left = cursorX + 'px';
+                cursorCircle.style.top = cursorY + 'px';
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+
+            // ホバー制御
+            document.body.addEventListener('mouseover', (e) => {
+                if (e.target.closest('.hover-target') || e.target.tagName === 'A') {
+                    document.body.classList.add('hovering');
+                } else {
+                    document.body.classList.remove('hovering');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
